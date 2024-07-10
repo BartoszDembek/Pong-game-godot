@@ -1,0 +1,85 @@
+[gd_scene load_steps=10 format=3 uid="uid://d3hk6ks6htjmd"]
+
+[ext_resource type="Script" path="res://Main/main.gd" id="1_6myju"]
+[ext_resource type="PackedScene" uid="uid://d85a2jqbimj" path="res://Player/player.tscn" id="1_syx08"]
+[ext_resource type="PackedScene" uid="uid://blpf88nsrt2yw" path="res://Opponent/opponent.tscn" id="2_gypjt"]
+[ext_resource type="PackedScene" uid="uid://g3e3y7ptcd56" path="res://Score/score.tscn" id="2_lsycl"]
+[ext_resource type="PackedScene" uid="uid://c4cauy6p0pqgq" path="res://Ball/ball.tscn" id="4_aih4x"]
+[ext_resource type="AudioStream" uid="uid://dqtn0fui23cdu" path="res://Assets/ping_pong_8bit_beeep.ogg" id="6_e6o73"]
+[ext_resource type="PackedScene" uid="uid://dp4nvtajblgtb" path="res://Menus/pause_menu.tscn" id="7_xtppl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_knq5n"]
+size = Vector2(590, 719)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_77asy"]
+size = Vector2(1278, 248)
+
+[node name="Main" type="Node2D"]
+process_mode = 3
+position = Vector2(3, 0)
+script = ExtResource("1_6myju")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.350944, 0.379516, 0.55194, 1)
+
+[node name="Score" parent="." instance=ExtResource("2_lsycl")]
+layer = 0
+
+[node name="Ball" parent="." instance=ExtResource("4_aih4x")]
+position = Vector2(640, 360)
+
+[node name="Player" parent="." instance=ExtResource("1_syx08")]
+position = Vector2(47, 360)
+
+[node name="Opponent" parent="." instance=ExtResource("2_gypjt")]
+position = Vector2(1223, 360)
+
+[node name="ResetAreaLeft" type="Area2D" parent="."]
+position = Vector2(-14, 10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResetAreaLeft"]
+position = Vector2(-288, 350.5)
+shape = SubResource("RectangleShape2D_knq5n")
+
+[node name="ResetAreaRight" type="Area2D" parent="."]
+position = Vector2(1858, 10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ResetAreaRight"]
+position = Vector2(-284, 351)
+shape = SubResource("RectangleShape2D_knq5n")
+
+[node name="WallTop" type="StaticBody2D" parent="."]
+position = Vector2(7, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallTop"]
+position = Vector2(630, -114)
+shape = SubResource("RectangleShape2D_77asy")
+
+[node name="WallBottom" type="StaticBody2D" parent="."]
+position = Vector2(7, 959)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallBottom"]
+position = Vector2(631, -113)
+shape = SubResource("RectangleShape2D_77asy")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="ScoreSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_e6o73")
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_xtppl")]
+visible = false
+
+[connection signal="body_entered" from="ResetAreaLeft" to="." method="_on_reset_area_left_body_entered"]
+[connection signal="body_entered" from="ResetAreaRight" to="." method="_on_reset_area_right_body_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="resetGame" from="PauseMenu" to="." method="_on_pause_menu_reset_game"]
